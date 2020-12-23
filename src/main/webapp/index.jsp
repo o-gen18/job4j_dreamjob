@@ -1,5 +1,9 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="ru.job4j.dream.model.Post" %>
+<%@ page import="ru.job4j.dream.store.Store" %>
+
 <!doctype html>
-<html lang="en">
+<html lang=ru.job4j.dream.model.Post"en">
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -18,35 +22,25 @@
     <title>Работа мечты!</title>
 </head>
 <body>
-<table class="table">
-    <thead>
-    <tr>
-        <th scope="col">#</th>
-        <th scope="col">First</th>
-        <th scope="col">Last</th>
-        <th scope="col">Handle</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <th scope="row">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
-    </tr>
-    <tr>
-        <th scope="row">2</th>
-        <td>Jacob</td>
-        <td>Thornton</td>
-        <td>@fat</td>
-    </tr>
-    <tr>
-        <th scope="row">3</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-    </tr>
-    </tbody>
-</table>
+<div class="container">
+    <div class="row">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Объявления</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% for (Post post : Store.instOf().findAll()) { %>
+                <tr>
+                    <td><%= post.getName()%></td>
+                    <td><%= " - " + post.getDescription()%></td>
+                    <td><%= "Date:  " + post.getCreated() %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>
