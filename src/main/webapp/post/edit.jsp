@@ -1,8 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="ru.job4j.dream.store.Store" %>
 <%@ page import="ru.job4j.dream.model.Post" %>
+
 <!doctype html>
-<html lang="en">
+<html lang=ru.job4j.dream.servlet.PostServlet"en">
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -28,10 +29,10 @@
                 Новая вакансия.
             </div>
             <div class="card-body">
-                <form>
+                <form action="<%=request.getContextPath()%>/post/save" method="post">
                     <div class="form-group">
                         <label>Имя</label>
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" name="name">
                     </div>
                     <button type="submit" class="btn btn-primary">Сохранить</button>
                 </form>
