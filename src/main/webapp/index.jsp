@@ -47,7 +47,7 @@
     </div>
     <div class="row pt-3">
         <div class="card" style="width: 100%">
-            <div class="card-header">Сегдняшние кандидаты</div>
+            <div class="card-header">Сегодняшние кандидаты</div>
             <div class="card-body"></div>
         </div>
     </div>
