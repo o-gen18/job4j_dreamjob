@@ -1,7 +1,10 @@
 package ru.job4j.dream.store;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.job4j.dream.model.Candidate;
+import ru.job4j.dream.model.Model;
 import ru.job4j.dream.model.Post;
 
 import java.io.BufferedReader;
@@ -15,6 +18,8 @@ import java.util.List;
 import java.util.Properties;
 
 public class PsqlStore implements Store {
+    private static final Logger LOG = LoggerFactory.getLogger(PsqlStore.class.getName());
+
     private final BasicDataSource pool = new BasicDataSource();
 
     private PsqlStore() {
@@ -23,12 +28,12 @@ public class PsqlStore implements Store {
                 new FileReader("db.properties"))) {
             cfg.load(io);
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            LOG.error("IllegalStateException", e);
         }
         try {
             Class.forName(cfg.getProperty("jdbc.driver"));
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            LOG.error("IllegalStateException", e);
         }
         pool.setDriverClassName(cfg.getProperty("jdbc.driver"));
         pool.setUrl(cfg.getProperty("jdbc.url"));
@@ -58,7 +63,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception occurred in working with database", e);
         }
         return posts;
     }
@@ -74,48 +79,59 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception occurred in working with database", e);
         }
         return candidates;
     }
 
-    @Override
-    public void save(Post post) {
-        if (post.getId() == 0) {
-            create(post);
+    private void saveModel(Model model, String nameOfTable) {
+        if (model.getId() == 0) {
+            create(model, nameOfTable);
         } else {
-            update(post);
+            update(model, nameOfTable);
         }
     }
 
-    private Post create(Post post) {
+    @Override
+    public void save(Post post) {
+        saveModel(post, "post");
+    }
+
+    @Override
+    public void save(Candidate candidate) {
+        saveModel(candidate, "candidate");
+    }
+
+    private Model create(Model model, String nameOfTable) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement(
-                     "INSERT INTO post(name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
+                     "INSERT INTO " + nameOfTable + "(name) VALUES (?)",
+                     PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
-            ps.setString(1, post.getName());
+            ps.setString(1, model.getName());
             ps.execute();
             try (ResultSet id = ps.getGeneratedKeys()) {
                 if (id.next()) {
-                    post.setId(id.getInt(1));
+                    model.setId(id.getInt(1));
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception occurred in working with database", e);
         }
-        return post;
+        return model;
     }
 
-    private void update(Post post) {
+    private void update(Model model, String nameOfTable) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement(
-                     "UPDATE post SET name=(?) WHERE id=(?)", PreparedStatement.RETURN_GENERATED_KEYS)
+                     "UPDATE " + nameOfTable + " SET name=(?) WHERE id=(?)",
+                     PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
-            ps.setString(1, post.getName());
-            ps.setInt(2, post.getId());
+            ps.setString(1, model.getName());
+            ps.setInt(2, model.getId());
             ps.execute();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception occurred in working with database", e);
         }
     }
 
@@ -132,8 +148,26 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception occurred in working with database", e);
         }
         return post;
+    }
+
+    @Override
+    public Candidate findCandidateById(int id) {
+        Candidate candidate = null;
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement(
+                     "SELECT * FROM candidate WHERE id=(?)")) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    candidate = new Candidate(id, rs.getString("name"));
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Exception occurred in working with database", e);
+        }
+        return candidate;
     }
 }
