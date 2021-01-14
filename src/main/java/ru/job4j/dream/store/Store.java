@@ -1,20 +1,13 @@
 package ru.job4j.dream.store;
 
-import ru.job4j.dream.model.Candidate;
-import ru.job4j.dream.model.Post;
+import ru.job4j.dream.model.Model;
 
 import java.util.Collection;
 
 public interface Store {
-    Collection<Post> findAllPosts();
+    Collection<? extends Model> findAll();
 
-    Collection<Candidate> findAllCandidates();
+    void save(Model model);
 
-    void save(Post post);
-
-    void save(Candidate candidate);
-
-    Post findPostById(int id);
-
-    Candidate findCandidateById(int id);
+    Model findById(int id);
 }

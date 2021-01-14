@@ -6,4 +6,6 @@ public interface Model {
     void setId(int id);
 
     String getName();
+
+    void setName(String name);
 }
