@@ -5,10 +5,17 @@ import java.util.Objects;
 public class Candidate implements Model {
     private int id;
     private String name;
+    private String photoId;
 
     public Candidate(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Candidate(int id, String name, String photoId) {
+        this.id = id;
+        this.name = name;
+        this.photoId = photoId;
     }
 
     public int getId() {
@@ -25,6 +32,14 @@ public class Candidate implements Model {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPhotoId() {
+        return photoId;
+    }
+
+    public void setPhotoId(String photoId) {
+        this.photoId = photoId;
     }
 
     @Override

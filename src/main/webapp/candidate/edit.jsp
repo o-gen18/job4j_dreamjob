@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="ru.job4j.dream.model.Candidate" %>
 <%@ page import="ru.job4j.dream.store.MemCandidateStore" %>
+<%@ page import="ru.job4j.dream.store.PsqlCandidateStore" %>
 <!doctype html>
 <html lang="en">
 <head>
@@ -25,7 +26,7 @@
     String id = request.getParameter("id");
     Candidate candidate = new Candidate(0, "");
     if (id != null) {
-        candidate = (Candidate) MemCandidateStore.instOf().findById(Integer.valueOf(id));
+        candidate = (Candidate) PsqlCandidateStore.instOf().findById(Integer.valueOf(id));
     }
 %>
 <div class="container pt-3">
@@ -39,12 +40,22 @@
                 <% } %>
             </div>
             <div class="card-body">
-                <form action="<%=request.getContextPath()%>/candidates.do?id=<%=candidate.getId()%>" method="post">
+                <form action="<%=request.getContextPath()%>/candidates.do?id=<%=candidate.getId()%>&photoId=<%=request.getAttribute("photoId")%>" method="post">
                     <div class="form-group">
                         <label>Имя</label>
                         <input type="text" class="form-control" name="name" value="<%=candidate.getName()%>">
                     </div>
                     <button type="submit" class="btn btn-primary">Сохранить</button>
+                </form>
+            </div>
+            <div class="card-body">
+                <form action="<%=request.getContextPath()%>/upload" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Фото</label>
+                        <input type="file" name="file">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить фото</button>
+                    <img src="<%=request.getContextPath()%>/download?photoId=<%=request.getAttribute("photoId")%>" width="150px" height="150px"/>
                 </form>
             </div>
         </div>

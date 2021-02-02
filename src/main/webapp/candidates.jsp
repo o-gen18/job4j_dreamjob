@@ -31,6 +31,7 @@
                     <thead>
                     <tr>
                         <th scope="col">Названия</th>
+                        <th scope="col">Фото</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -41,6 +42,12 @@
                                <i class="fa fa-edit mr-3"></i>
                             </a>
                             <c:out value="${candidate.name}"/>
+                            <br>
+                            <a href='<c:url value="/delete?photoId=${candidate.photoId}&id=${candidate.id}"/>'>(удалить кандидата)</a>
+                        </td>
+                        <td>
+                            <img src="<c:url value='/download?photoId=${candidate.photoId}'/>" width="100px" height="100px"/>
+                            <a href="<c:url value='/download?photoId=${candidate.photoId}'/>">(скачать фото)</a>
                         </td>
                     </tr>
                     </c:forEach>
