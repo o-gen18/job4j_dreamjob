@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <!doctype html>
 <html lang=ru.job4j.dream.model.Post"en">
 <head>
@@ -36,7 +36,16 @@
                 <a class="nav-link" href="<%=request.getContextPath()%>/candidate/edit.jsp">Добавить кандидата</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp">Войти</a>
+                <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp">
+                    <c:choose>
+                        <c:when test="${user.name == null}">
+                            Авторизоваться
+                        </c:when>
+                        <c:otherwise>
+                            <c:out value="${user.name}"/> | Выйти
+                        </c:otherwise>
+                    </c:choose>
+                    </a>
             </li>
         </ul>
     </div>

@@ -2,6 +2,7 @@
 <%@ page import="ru.job4j.dream.model.Candidate" %>
 <%@ page import="ru.job4j.dream.store.MemCandidateStore" %>
 <%@ page import="ru.job4j.dream.store.PsqlCandidateStore" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <!doctype html>
 <html lang="en">
 <head>
@@ -33,11 +34,25 @@
     <div class="row">
         <div class="card" style="width: 100%">
             <div class="card-header">
-                <% if (id == null) { %>
-                    Новый кандидат.
-                <% } else { %>
-                    Редактирование кандидата.
-                <% } %>
+                <ul class="nav">
+                    <li><% if (id == null) { %>
+                        Новый кандидат.
+                        <% } else { %>
+                        Редактирование кандидата.
+                        <% } %></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp">
+                            <c:choose>
+                                <c:when test="${user.name == null}">
+                                    Авторизоваться
+                                </c:when>
+                                <c:otherwise>
+                                    <c:out value="${user.name}"/> | Выйти
+                                </c:otherwise>
+                            </c:choose>
+                        </a>
+                    </li>
+                </ul>
             </div>
             <div class="card-body">
                 <form action="<%=request.getContextPath()%>/candidates.do?id=<%=candidate.getId()%>&photoId=<%=request.getAttribute("photoId")%>" method="post">

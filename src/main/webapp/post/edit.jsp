@@ -2,7 +2,7 @@
 <%@ page import="ru.job4j.dream.model.Post" %>
 <%@ page import="ru.job4j.dream.store.MemPostStore" %>
 <%@ page import="ru.job4j.dream.store.PsqlPostStore" %>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <!doctype html>
 <html lang=ru.job4j.dream.servlet.PostServlet"en">
 <head>
@@ -34,11 +34,25 @@
     <div class="row">
         <div class="card" style="width: 100%">
             <div class="card-header">
-                <% if (id == null) { %>
-                Новая вакансия.
-                <% } else { %>
-                Редактирование вакансии.
-                <% } %>
+                <ul class="nav">
+                    <li><% if (id == null) { %>
+                        Новая вакансия.
+                        <% } else { %>
+                        Редактирование вакансии.
+                        <% } %></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp">
+                            <c:choose>
+                                <c:when test="${user.name == null}">
+                                    Авторизоваться
+                                </c:when>
+                                <c:otherwise>
+                                    <c:out value="${user.name}"/> | Выйти
+                                </c:otherwise>
+                            </c:choose>
+                        </a>
+                    </li>
+                </ul>
             </div>
             <div class="card-body">
                 <form action="<%=request.getContextPath()%>/posts.do?id=<%=post.getId()%>" method="post">

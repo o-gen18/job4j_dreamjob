@@ -24,7 +24,21 @@
     <div class="row">
         <div class="card" style="width: 100%">
             <div class="card-header">
-                Кандидаты
+                <ul class="nav">
+                    <li>Кандидаты</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp">
+                            <c:choose>
+                                <c:when test="${user.name == null}">
+                                    Авторизоваться
+                                </c:when>
+                                <c:otherwise>
+                                    <c:out value="${user.name}"/> | Выйти
+                                </c:otherwise>
+                            </c:choose>
+                        </a>
+                    </li>
+                </ul>
             </div>
             <div class="card-body">
                 <table class="table">
