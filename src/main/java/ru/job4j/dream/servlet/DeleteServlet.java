@@ -12,7 +12,11 @@ public class DeleteServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
-        PsqlCandidateStore.instOf().delete(req.getParameter("id"), req.getParameter("photoId"));
+        if (PsqlCandidateStore.instOf().delete(Integer.parseInt(req.getParameter("id")))) {
+            if (req.getParameter("photoId") != null) {
+                PsqlCandidateStore.instOf().deletePhoto(req.getParameter("photoId"));
+            }
+        }
         resp.sendRedirect(req.getContextPath() + "/candidates.do");
     }
 }

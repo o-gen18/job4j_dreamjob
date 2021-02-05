@@ -31,11 +31,16 @@ public class MemPostStore implements Store {
     }
 
     @Override
-    public void save(Model model) {
+    public Model save(Model model) {
         if (model.getId() == 0) {
             model.setId(postId.incrementAndGet());
         }
-        posts.put(model.getId(), (Post) model);
+        return posts.put(model.getId(), (Post) model);
+    }
+
+    @Override
+    public boolean delete(int id) {
+        return posts.remove(id) != null;
     }
 
     @Override

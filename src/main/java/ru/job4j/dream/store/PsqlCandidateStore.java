@@ -85,14 +85,13 @@ public class PsqlCandidateStore implements Store {
         return candidate;
     }
 
-    private void update(Model model) {
+    private Candidate update(Model model) {
         Candidate candidate = (Candidate) model;
         String photoId = candidate.getPhotoId();
         if (!(photoId == null)) {
             try (Connection cn = pool.getConnection();
                  PreparedStatement ps =  cn.prepareStatement(
-                         "UPDATE candidate SET (name, photoId)=(?, ?) WHERE id=(?)",
-                         PreparedStatement.RETURN_GENERATED_KEYS)
+                         "UPDATE candidate SET (name, photoId)=(?, ?) WHERE id=(?)")
             ) {
                 ps.setString(1, candidate.getName());
                 ps.setString(2, photoId);
@@ -104,8 +103,7 @@ public class PsqlCandidateStore implements Store {
         } else {
             try (Connection cn = pool.getConnection();
                  PreparedStatement ps =  cn.prepareStatement(
-                         "UPDATE candidate SET (name)=(?) WHERE id=(?)",
-                         PreparedStatement.RETURN_GENERATED_KEYS)
+                         "UPDATE candidate SET (name)=(?) WHERE id=(?)")
             ) {
                 ps.setString(1, candidate.getName());
                 ps.setInt(2, candidate.getId());
@@ -114,14 +112,28 @@ public class PsqlCandidateStore implements Store {
                 LOG.error("Exception occurred in working with database", e);
             }
         }
+        return candidate;
     }
 
     @Override
-    public void save(Model model) {
+    public Model save(Model model) {
         if (model.getId() == 0) {
-            create(model);
+            return create(model);
         } else {
-            update(model);
+            return update(model);
+        }
+    }
+
+    @Override
+    public boolean delete(int id) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement(
+                     "DELETE FROM candidate WHERE id=(?)")) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() == 1;
+        } catch (Exception e) {
+            LOG.error("Exception occurred in working with database", e);
+            return false;
         }
     }
 
@@ -165,19 +177,16 @@ public class PsqlCandidateStore implements Store {
         return photoId;
     }
 
-    public void delete(String id, String photoId) {
+    public boolean deletePhoto(String photoId) {
         int photoIdInt = Integer.parseInt(photoId.substring(0, photoId.indexOf("_")));
         try (Connection cn = pool.getConnection();
-             PreparedStatement psCandidate =  cn.prepareStatement(
-                     "DELETE FROM candidate WHERE id=(?)");
-             PreparedStatement psPhoto = cn.prepareStatement(
+             PreparedStatement ps = cn.prepareStatement(
                      "DELETE FROM photo WHERE id=(?)")) {
-            psCandidate.setInt(1, Integer.parseInt(id));
-            psCandidate.execute();
-            psPhoto.setInt(1, photoIdInt);
-            psPhoto.execute();
+            ps.setInt(1, photoIdInt);
+            return ps.executeUpdate() == 1;
         } catch (Exception e) {
             LOG.error("Exception occurred in working with database", e);
+            return false;
         }
     }
 }

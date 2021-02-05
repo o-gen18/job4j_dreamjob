@@ -40,7 +40,7 @@ public class PsqlPostStore implements Store {
         return posts;
     }
 
-    private Post create(Model model) {
+    private Model create(Model model) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement(
                      "INSERT INTO post(name) VALUES (?)",
@@ -56,14 +56,13 @@ public class PsqlPostStore implements Store {
         } catch (Exception e) {
             LOG.error("Exception occurred in working with database", e);
         }
-        return (Post) model;
+        return model;
     }
 
-    private void update(Model model) {
+    private Model update(Model model) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement(
-                     "UPDATE post SET name=(?) WHERE id=(?)",
-                     PreparedStatement.RETURN_GENERATED_KEYS)
+                     "UPDATE post SET name=(?) WHERE id=(?)")
         ) {
             ps.setString(1, model.getName());
             ps.setInt(2, model.getId());
@@ -71,14 +70,28 @@ public class PsqlPostStore implements Store {
         } catch (Exception e) {
             LOG.error("Exception occurred in working with database", e);
         }
+        return model;
     }
 
     @Override
-    public void save(Model model) {
+    public Model save(Model model) {
         if (model.getId() == 0) {
-            create(model);
+            return create(model);
         } else {
-            update(model);
+            return update(model);
+        }
+    }
+
+    @Override
+    public boolean delete(int id) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement(
+                     "DELETE FROM post WHERE id=(?)")) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() == 1;
+        } catch (Exception e) {
+            LOG.error("Exception occurred in working with database", e);
+            return false;
         }
     }
 

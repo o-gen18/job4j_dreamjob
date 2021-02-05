@@ -31,11 +31,16 @@ public class MemCandidateStore implements Store {
     }
 
     @Override
-    public void save(Model model) {
+    public Model save(Model model) {
         if (model.getId() == 0) {
             model.setId(candidateId.incrementAndGet());
         }
-        candidates.put(model.getId(), (Candidate) model);
+        return candidates.put(model.getId(), (Candidate) model);
+    }
+
+    @Override
+    public boolean delete(int id) {
+        return candidates.remove(id) != null;
     }
 
     @Override
