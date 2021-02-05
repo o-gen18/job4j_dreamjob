@@ -7,7 +7,7 @@ import java.util.Collection;
 public interface Store {
     Collection<? extends Model> findAll();
 
-    boolean save(Model model);
+    Model save(Model model);
 
     boolean delete(int id);
 

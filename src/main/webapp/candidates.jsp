@@ -44,7 +44,7 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th scope="col">Названия</th>
+                        <th scope="col">Имена</th>
                         <th scope="col">Фото</th>
                     </tr>
                     </thead>

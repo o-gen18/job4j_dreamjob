@@ -2,6 +2,7 @@ package ru.job4j.dream.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.job4j.dream.model.Candidate;
 import ru.job4j.dream.model.Model;
 import ru.job4j.dream.model.UserModel;
 import ru.job4j.dream.model.User;
@@ -70,20 +71,25 @@ public class PsqlUserStore implements UserStore {
     }
 
     @Override
-    public boolean save(Model model) {
+    public Model save(Model model) {
         User user = (User) model;
         try (Connection cn = pool.getConnection();
             PreparedStatement ps = cn.prepareStatement(
-                    "INSERT INTO users (name, email, password) values (?, ?, ?)")) {
+                    "INSERT INTO users (name, email, password) values (?, ?, ?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, user.getName());
                 ps.setString(2, user.getEmail());
                 ps.setString(3, user.getPassword());
                 ps.execute();
-                return true;
+                try (ResultSet id = ps.getGeneratedKeys()) {
+                    if (id.next()) {
+                        user.setId(id.getInt(1));
+                    }
+                }
         } catch (Exception e) {
             LOG.error("Exception occurred in working with database", e);
-            return false;
         }
+        return user;
     }
 
     @Override
