@@ -21,14 +21,13 @@ public class AuthServlet extends HttpServlet {
             return;
         }
         User user = (User) PsqlUserStore.instOf().findByEmail(email);
-        if (user != null && !user.getEmail().equals(email)
-                && !user.getPassword().equals(password)) {
-            req.setAttribute("error", "(Не верный email или пароль)");
-            req.getRequestDispatcher("login.jsp").forward(req, resp);
-        } else {
+        if (user != null && user.getPassword().equals(password)) {
             HttpSession sc = req.getSession();
             sc.setAttribute("user", user);
-            resp.sendRedirect(req.getContextPath() + "/posts.do");
+            resp.sendRedirect(req.getContextPath() + "/index.jsp");
+        } else {
+            req.setAttribute("error", "(Не верный email или пароль)");
+            req.getRequestDispatcher("login.jsp").forward(req, resp);
         }
     }
 }

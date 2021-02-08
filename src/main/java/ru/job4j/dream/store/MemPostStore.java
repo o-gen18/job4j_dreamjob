@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MemPostStore implements Store {
-    private static final MemPostStore INST = new MemPostStore();
+    private static final Store INST = new MemPostStore();
 
     private static AtomicInteger postId = new AtomicInteger(4);
 
@@ -21,7 +21,7 @@ public class MemPostStore implements Store {
         posts.put(3, new Post(3, "Senior Java Job"));
     }
 
-    public static MemPostStore instOf() {
+    public static Store instOf() {
         return INST;
     }
 

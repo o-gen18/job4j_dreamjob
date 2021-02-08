@@ -18,7 +18,7 @@
     <title>Работа мечты</title>
 </head>
 <body>
-<% String error = request.getParameter("error"); %>
+<% String error = (String) request.getAttribute("error"); %>
 <div class="container pt-3">
     <div class="row">
         <div class="card" style="width: 100%">

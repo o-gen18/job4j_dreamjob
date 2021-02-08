@@ -48,7 +48,8 @@ public class UploadServlet extends HttpServlet {
 
             for (FileItem item : items) {
                 if (!item.isFormField()) {
-                    String photoId = PsqlCandidateStore.instOf().savePhoto(item.getName());
+                    PsqlCandidateStore store = (PsqlCandidateStore) PsqlCandidateStore.instOf();
+                    String photoId = store.savePhoto(item.getName());
                     File file = new File(folder + File.separator + photoId);
                     try (FileOutputStream out = new FileOutputStream(file)) {
                         out.write(item.getInputStream().readAllBytes());

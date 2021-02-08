@@ -14,7 +14,8 @@ public class DeleteServlet extends HttpServlet {
         throws ServletException, IOException {
         if (PsqlCandidateStore.instOf().delete(Integer.parseInt(req.getParameter("id")))) {
             if (req.getParameter("photoId") != null) {
-                PsqlCandidateStore.instOf().deletePhoto(req.getParameter("photoId"));
+                PsqlCandidateStore store = (PsqlCandidateStore) PsqlCandidateStore.instOf();
+                store.deletePhoto(req.getParameter("photoId"));
             }
         }
         resp.sendRedirect(req.getContextPath() + "/candidates.do");

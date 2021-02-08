@@ -32,6 +32,7 @@ public class PostServletTest {
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
         when(req.getParameter("name")).thenReturn("Oleg Generalov");
+        when(req.getParameter("id")).thenReturn("0");
         new PostServlet().doPost(req, resp);
         assertThat(store.findAll().iterator().next().getName(), is("Oleg Generalov"));
     }

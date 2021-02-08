@@ -1,16 +1,13 @@
 package ru.job4j.dream.store;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.job4j.dream.model.Candidate;
 import ru.job4j.dream.model.Model;
-import ru.job4j.dream.model.Post;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,11 +15,11 @@ import java.util.List;
 public class PsqlCandidateStore implements Store {
     private static final Logger LOG = LoggerFactory.getLogger(PsqlPostStore.class.getName());
 
-    private static final PsqlCandidateStore INST = new PsqlCandidateStore();
+    private static final Store INST = new PsqlCandidateStore();
 
     private final PsqlConnection pool = PsqlConnection.instOf();
 
-    public static PsqlCandidateStore instOf() {
+    public static Store instOf() {
         return INST;
     }
 
@@ -178,6 +175,9 @@ public class PsqlCandidateStore implements Store {
     }
 
     public boolean deletePhoto(String photoId) {
+        if (photoId.equals("null")) {
+            return false;
+        }
         int photoIdInt = Integer.parseInt(photoId.substring(0, photoId.indexOf("_")));
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(

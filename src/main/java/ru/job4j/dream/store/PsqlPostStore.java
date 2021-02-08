@@ -16,11 +16,11 @@ import java.util.List;
 public class PsqlPostStore implements Store {
     private static final Logger LOG = LoggerFactory.getLogger(PsqlPostStore.class.getName());
 
-    private static final PsqlPostStore INST = new PsqlPostStore();
+    private static final Store INST = new PsqlPostStore();
 
     private final PsqlConnection pool = PsqlConnection.instOf();
 
-    public static PsqlPostStore instOf() {
+    public static Store instOf() {
         return INST;
     }
 

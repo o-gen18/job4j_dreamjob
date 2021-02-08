@@ -18,11 +18,11 @@ import java.util.List;
 public class PsqlUserStore implements UserStore {
     private static final Logger LOG = LoggerFactory.getLogger(PsqlUserStore.class.getName());
 
-    private static final PsqlUserStore INST = new PsqlUserStore();
+    private static final UserStore INST = new PsqlUserStore();
 
     private final PsqlConnection pool = PsqlConnection.instOf();
 
-    public static PsqlUserStore instOf() {
+    public static UserStore instOf() {
         return INST;
     }
 
