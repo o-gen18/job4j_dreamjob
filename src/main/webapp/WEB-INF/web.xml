@@ -76,5 +76,13 @@
     <servlet-name>RegServlet</servlet-name>
     <url-pattern>/reg.do</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>CityServlet</servlet-name>
+    <servlet-class>ru.job4j.dream.servlet.CityServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CityServlet</servlet-name>
+    <url-pattern>/city</url-pattern>
+  </servlet-mapping>
 </web-app>
 

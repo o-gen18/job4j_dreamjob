@@ -8,9 +8,11 @@ import ru.job4j.dream.model.Model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class PsqlCandidateStore implements Store {
     private static final Logger LOG = LoggerFactory.getLogger(PsqlPostStore.class.getName());
@@ -33,7 +35,8 @@ public class PsqlCandidateStore implements Store {
                     candidates.add(new Candidate(
                                     it.getInt("id"),
                                     it.getString("name"),
-                                    it.getString("photoId")));
+                                    it.getString("photoId"),
+                                    it.getString("cityId")));
                 }
             }
         } catch (Exception e) {
@@ -42,17 +45,17 @@ public class PsqlCandidateStore implements Store {
         return candidates;
     }
 
-    private Candidate create(Model model) {
-        Candidate candidate = (Candidate) model;
+    private Candidate create(Candidate candidate) {
         String photoId = candidate.getPhotoId();
         if (!(photoId == null)) {
             try (Connection cn = pool.getConnection();
                  PreparedStatement ps =  cn.prepareStatement(
-                         "INSERT INTO candidate(name, photoId) VALUES (?, ?)",
+                         "INSERT INTO candidate(name, photoId, cityId) VALUES (?, ?, ?)",
                          PreparedStatement.RETURN_GENERATED_KEYS)
             ) {
                 ps.setString(1, candidate.getName());
                 ps.setString(2, photoId);
+                ps.setString(3, candidate.getCityId());
                 ps.execute();
                 try (ResultSet id = ps.getGeneratedKeys()) {
                     if (id.next()) {
@@ -65,10 +68,11 @@ public class PsqlCandidateStore implements Store {
         } else {
             try (Connection cn = pool.getConnection();
                  PreparedStatement ps =  cn.prepareStatement(
-                         "INSERT INTO candidate(name) VALUES (?)",
+                         "INSERT INTO candidate(name, cityId) VALUES (?, ?)",
                          PreparedStatement.RETURN_GENERATED_KEYS)
             ) {
                 ps.setString(1, candidate.getName());
+                ps.setString(2, candidate.getCityId());
                 ps.execute();
                 try (ResultSet id = ps.getGeneratedKeys()) {
                     if (id.next()) {
@@ -82,17 +86,17 @@ public class PsqlCandidateStore implements Store {
         return candidate;
     }
 
-    private Candidate update(Model model) {
-        Candidate candidate = (Candidate) model;
+    private Candidate update(Candidate candidate) {
         String photoId = candidate.getPhotoId();
         if (!(photoId == null)) {
             try (Connection cn = pool.getConnection();
                  PreparedStatement ps =  cn.prepareStatement(
-                         "UPDATE candidate SET (name, photoId)=(?, ?) WHERE id=(?)")
+                         "UPDATE candidate SET (name, photoId, cityId)=(?, ?, ?) WHERE id=(?)")
             ) {
                 ps.setString(1, candidate.getName());
                 ps.setString(2, photoId);
-                ps.setInt(3, candidate.getId());
+                ps.setString(3, candidate.getCityId());
+                ps.setInt(4, candidate.getId());
                 ps.execute();
             } catch (Exception e) {
                 LOG.error("Exception occurred in working with database", e);
@@ -100,9 +104,10 @@ public class PsqlCandidateStore implements Store {
         } else {
             try (Connection cn = pool.getConnection();
                  PreparedStatement ps =  cn.prepareStatement(
-                         "UPDATE candidate SET (name)=(?) WHERE id=(?)")
+                         "UPDATE candidate SET (name, cityId)=(?, ?) WHERE id=(?)")
             ) {
                 ps.setString(1, candidate.getName());
+                ps.setString(2, candidate.getCityId());
                 ps.setInt(2, candidate.getId());
                 ps.execute();
             } catch (Exception e) {
@@ -114,10 +119,12 @@ public class PsqlCandidateStore implements Store {
 
     @Override
     public Model save(Model model) {
+        Candidate candidate = (Candidate) model;
+        saveCity(candidate.getCityId());
         if (model.getId() == 0) {
-            return create(model);
+            return create(candidate);
         } else {
-            return update(model);
+            return update(candidate);
         }
     }
 
@@ -145,7 +152,8 @@ public class PsqlCandidateStore implements Store {
                 if (rs.next()) {
                     candidate = new Candidate(id,
                             rs.getString("name"),
-                            rs.getString("photoId"));
+                            rs.getString("photoId"),
+                            rs.getString("cityId"));
                 }
             }
         } catch (Exception e) {
@@ -189,4 +197,37 @@ public class PsqlCandidateStore implements Store {
             return false;
         }
     }
+
+    public boolean saveCity(String cityId) {
+        try (Connection cn = pool.getConnection();
+           PreparedStatement ps = cn.prepareStatement(
+                "INSERT INTO city(name) values(?)")) {
+            ps.setString(1, cityId);
+            return ps.executeUpdate() == 1;
+        } catch (Exception e) {
+            LOG.error("Exception occurred in working with database", e);
+            return false;
+        }
+    }
+
+    public String getCities() {
+        StringJoiner cities = new StringJoiner(",", "[", "]");
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement(
+                     "SELECT name FROM city"
+             )) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                cities.add("\"" + rs.getString(1) + "\"");
+            }
+            return cities.toString();
+        } catch (Exception e) {
+            LOG.error("Exception occurred in working with database", e);
+            return cities.toString();
+        }
+    }
+
+//    public static void main(String[] args) {
+//        System.out.println(new PsqlCandidateStore().getCities());
+//    }
 }

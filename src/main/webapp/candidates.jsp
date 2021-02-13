@@ -45,6 +45,7 @@
                     <thead>
                     <tr>
                         <th scope="col">Имена</th>
+                        <th scope="col">Город</th>
                         <th scope="col">Фото</th>
                     </tr>
                     </thead>
@@ -52,12 +53,15 @@
                     <c:forEach items="${candidates}" var="candidate">
                     <tr>
                         <td>
-                            <a href='<c:url value="/candidate/edit.jsp?id=${candidate.id}"/>'>
-                               <i class="fa fa-edit mr-3"></i>
+                            <a href='<c:url value="/candidate/edit.jsp?id=${candidate.id}&photoId=${candidate.photoId}"/>'>
+                               <i class="fa fa-edit mr-3"><c:out value="${candidate.photoId}"/></i>
                             </a>
                             <c:out value="${candidate.name}"/>
                             <br>
                             <a href='<c:url value="/delete?photoId=${candidate.photoId}&id=${candidate.id}"/>'>(удалить кандидата)</a>
+                        </td>
+                        <td>
+                            <c:out value="${candidate.cityId}"/>
                         </td>
                         <td>
                             <img src="<c:url value='/download?photoId=${candidate.photoId}'/>" width="100px" height="100px"/>

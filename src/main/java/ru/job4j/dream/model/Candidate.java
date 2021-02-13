@@ -6,16 +6,18 @@ public class Candidate implements Model {
     private int id;
     private String name;
     private String photoId;
+    private String cityId;
 
     public Candidate(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Candidate(int id, String name, String photoId) {
+    public Candidate(int id, String name, String photoId, String cityId) {
         this.id = id;
         this.name = name;
         this.photoId = photoId;
+        this.cityId = cityId;
     }
 
     public int getId() {
@@ -40,6 +42,14 @@ public class Candidate implements Model {
 
     public void setPhotoId(String photoId) {
         this.photoId = photoId;
+    }
+
+    public String getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(String cityId) {
+        this.cityId = cityId;
     }
 
     @Override

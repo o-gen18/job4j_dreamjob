@@ -19,10 +19,10 @@
             integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" ></script>
     <script>
         function validate() {
-            if(document.getElementById('name').value === '' || document.getElementById('city').value === undefined) {
+            if(document.getElementById('name').value === '' || document.getElementById('city').value === '') {
                 alert('Please enter the candidate name and city!');
                 return false;
             } else {
@@ -31,24 +31,35 @@
         }
 
         function getCities() {
-            alert('inside getCities');
             $.ajax({
                 type: 'GET',
-                url: 'http://localhost:8080/dreamjob/candidates.do',
-                data: {candidate: $('#name').val()},
+                url: 'http://localhost:8080/dreamjob/city',
+                contentType: "application/json; charset=utf-8",
                 dataType: 'json',
+                scriptCharset: "utf-8",
                 async: false
-            }).done(function (resp) {
-                var jsonResp = JSON.parse(JSON.stringify(resp));
-                if (!resp.first === undefined) {
-                    for (var i in resp.cities) {
-                        $('#cities').append('<option value=' + resp.city[i] + '>');
-                    }
+            }).done(function (data) {
+                var jsonResp = JSON.parse(JSON.stringify(data));
+                var selectedCity = document.getElementById('cityIdHolder').value;
+                // alert(selectedCity + '=selectd');
+                // alert(jsonResp.cities);
+                if (selectedCity !== 'null') {
+                    $('#cities').append('<option value="' + selectedCity + '" selected>');
+                    fillList(jsonResp.cities);
+                } else {
+                    fillList(jsonResp.cities);
                 }
             }).fail(function (err) {
-                alert('ajax failed');
                 alert(err);
             });
+        }
+
+        function fillList(jsonArray) {
+            for (var i in jsonArray) {
+                if (jsonArray[i] !== document.getElementById('cityIdHolder').value) {
+                    $('#cities').append('<option value="' + jsonArray[i] + '">');
+                }
+            }
         }
     </script>
 </head>
@@ -86,12 +97,13 @@
                 </ul>
             </div>
             <div class="card-body">
-                <form action="<%=request.getContextPath()%>/candidates.do?id=<%=candidate.getId()%>&photoId=<%=request.getAttribute("photoId")%>" method="post">
+                <form id="can" action="<%=request.getContextPath()%>/candidates.do?id=<%=candidate.getId()%>&photoId=<%=request.getAttribute("photoId") == null? request.getParameter("photoId"):request.getAttribute("photoId")%>" method="post">
                     <div class="form-group">
                         <label for="name">Имя</label>
                         <input id="name" type="text" class="form-control" name="name" value="<%=candidate.getName()%>">
                         <label for="city">Город</label>
-                        <input id="city" list="cities" class="form-control" name="city" value="<%=candidate.getCityId()%>" placeholder="Укажите свой город">
+                        <input id="city" list="cities" autocomplete="off" class="form-control" name="city" placeholder="Укажите свой город">
+                        <input type="hidden" id="cityIdHolder" value="<%=candidate.getCityId()%>">
                         <datalist id="cities">
                         </datalist>
                     </div>
@@ -105,7 +117,7 @@
                         <input id="file" type="file" name="file">
                     </div>
                     <button type="submit" class="btn btn-primary">Сохранить фото</button>
-                    <img src="<%=request.getContextPath()%>/download?photoId=<%=request.getAttribute("photoId")%>" width="150px" height="150px"/>
+                    <img src="<%=request.getContextPath()%>/download?photoId=<%=request.getAttribute("photoId") == null? request.getParameter("photoId"):request.getAttribute("photoId")%>" width="150px" height="150px"/>
                 </form>
             </div>
         </div>

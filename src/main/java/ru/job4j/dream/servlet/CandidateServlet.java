@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class CandidateServlet extends HttpServlet {
     @Override
@@ -26,7 +27,8 @@ public class CandidateServlet extends HttpServlet {
                 new Candidate(
                         Integer.valueOf(req.getParameter("id")),
                         req.getParameter("name"),
-                        req.getParameter("photoId")));
+                        req.getParameter("photoId"),
+                        req.getParameter("city")));
         resp.sendRedirect(req.getContextPath() + "/candidates.do");
     }
 }
