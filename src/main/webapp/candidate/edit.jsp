@@ -21,6 +21,22 @@
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" ></script>
     <script>
+        $(document).ready(function(){
+            var photo = $('#photo');
+            if(photo.attr('src').endsWith(null)) {
+                photo.hide();
+            }
+        });
+
+        function show(input) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#photo').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+            $('#photo').show();
+        }
+
         function validate() {
             if(document.getElementById('name').value === '' || document.getElementById('city').value === '') {
                 alert('Please enter the candidate name and city!');
@@ -40,26 +56,16 @@
                 async: false
             }).done(function (data) {
                 var jsonResp = JSON.parse(JSON.stringify(data));
-                var selectedCity = document.getElementById('cityIdHolder').value;
-                // alert(selectedCity + '=selectd');
-                // alert(jsonResp.cities);
-                if (selectedCity !== 'null') {
-                    $('#cities').append('<option value="' + selectedCity + '" selected>');
-                    fillList(jsonResp.cities);
-                } else {
-                    fillList(jsonResp.cities);
+                var predefinedCity = $('#cityIdHolder').val();
+                if (predefinedCity !== 'null') {
+                    $('#city').attr('value', predefinedCity);
+                }
+                for (var i in jsonResp.cities) {
+                    $('#cities').append('<option value="' + jsonResp.cities[i] + '">');
                 }
             }).fail(function (err) {
                 alert(err);
             });
-        }
-
-        function fillList(jsonArray) {
-            for (var i in jsonArray) {
-                if (jsonArray[i] !== document.getElementById('cityIdHolder').value) {
-                    $('#cities').append('<option value="' + jsonArray[i] + '">');
-                }
-            }
         }
     </script>
 </head>
@@ -97,27 +103,22 @@
                 </ul>
             </div>
             <div class="card-body">
-                <form id="can" action="<%=request.getContextPath()%>/candidates.do?id=<%=candidate.getId()%>&photoId=<%=request.getAttribute("photoId") == null? request.getParameter("photoId"):request.getAttribute("photoId")%>" method="post">
+                <form id="can" action="<%=request.getContextPath()%>/upload.do?id=<%=candidate.getId()%>&photoId=<%=request.getAttribute("photoId") == null? request.getParameter("photoId"):request.getAttribute("photoId")%>" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="name">Имя</label>
+                        <label for="name">Имя: </label>
                         <input id="name" type="text" class="form-control" name="name" value="<%=candidate.getName()%>">
-                        <label for="city">Город</label>
-                        <input id="city" list="cities" autocomplete="off" class="form-control" name="city" placeholder="Укажите свой город">
+                        <label for="city">Город: </label>
+                        <input id="city" list="cities" class="form-control" name="city" placeholder="Укажите свой город">
                         <input type="hidden" id="cityIdHolder" value="<%=candidate.getCityId()%>">
                         <datalist id="cities">
                         </datalist>
                     </div>
-                    <button type="submit" class="btn btn-primary" onclick="return validate()">Сохранить</button>
-                </form>
-            </div>
-            <div class="card-body">
-                <form action="<%=request.getContextPath()%>/upload" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="file">Фото</label>
-                        <input id="file" type="file" name="file">
+                        <label for="file">Загрузите фото: </label>
+                        <input id="file" class="fileInput" type="file" name="file" onchange="show(this)">
+                        <img id="photo" align="middle" src="<%=request.getContextPath()%>/download?photoId=<%=request.getAttribute("photoId") == null? request.getParameter("photoId"):request.getAttribute("photoId")%>" width="200px" height="200px"/>
                     </div>
-                    <button type="submit" class="btn btn-primary">Сохранить фото</button>
-                    <img src="<%=request.getContextPath()%>/download?photoId=<%=request.getAttribute("photoId") == null? request.getParameter("photoId"):request.getAttribute("photoId")%>" width="150px" height="150px"/>
+                    <button type="submit" class="btn btn-primary" onclick="return validate()">Сохранить</button>
                 </form>
             </div>
         </div>

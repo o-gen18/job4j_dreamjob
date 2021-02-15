@@ -1,7 +1,6 @@
 package ru.job4j.dream.servlet;
 
 import ru.job4j.dream.model.Candidate;
-import ru.job4j.dream.store.MemCandidateStore;
 import ru.job4j.dream.store.PsqlCandidateStore;
 
 import javax.servlet.ServletException;
@@ -9,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 public class CandidateServlet extends HttpServlet {
     @Override
@@ -27,7 +25,7 @@ public class CandidateServlet extends HttpServlet {
                 new Candidate(
                         Integer.valueOf(req.getParameter("id")),
                         req.getParameter("name"),
-                        req.getParameter("photoId"),
+                        (String) req.getAttribute("photoId"),
                         req.getParameter("city")));
         resp.sendRedirect(req.getContextPath() + "/candidates.do");
     }

@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class CityServlet extends HttpServlet {
 
@@ -18,8 +20,7 @@ public class CityServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         PsqlCandidateStore store = (PsqlCandidateStore) PsqlCandidateStore.instOf();
         String cities = store.getCities();
-        PrintWriter writer = new PrintWriter(resp.getOutputStream());
+        PrintWriter writer = new PrintWriter(resp.getOutputStream(), true, StandardCharsets.UTF_8);
         writer.println("{\"cities\":" + cities + "}");
-        writer.flush();
     }
 }

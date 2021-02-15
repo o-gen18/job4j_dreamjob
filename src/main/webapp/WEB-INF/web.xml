@@ -34,7 +34,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>UploadServlet</servlet-name>
-    <url-pattern>/upload</url-pattern>
+    <url-pattern>/upload.do</url-pattern>
   </servlet-mapping>
   <servlet>
     <servlet-name>DownloadServlet</servlet-name>
