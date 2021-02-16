@@ -50,9 +50,7 @@
             $.ajax({
                 type: 'GET',
                 url: 'http://localhost:8080/dreamjob/city',
-                contentType: "application/json; charset=utf-8",
                 dataType: 'json',
-                scriptCharset: "utf-8",
                 async: false
             }).done(function (data) {
                 var jsonResp = JSON.parse(JSON.stringify(data));
